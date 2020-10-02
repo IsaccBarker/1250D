@@ -1,7 +1,9 @@
+import readchar
 import sys
 import random
 import time
 
+global startingObs
 global xDim
 global yDim
 global currentX
@@ -37,7 +39,17 @@ def printGrid():
 
 def genObs():
 	for i in range(0, obNum):
-		obs.append(list((random.randint(0, xDim), random.randint(0, yDim))))
+		x = 0
+		y = 0
+		while True:
+			x = random.randint(0, xDim)
+			y = random.randint(0, yDim)
+			if (x == currentX or y == currentY):
+				continue
+
+			break
+
+		obs.append(list((x, y)))
 		if (obs[i][0] == targX and obs[i][1] == targY):
 			obs.pop()
 			continue
@@ -57,30 +69,35 @@ def genMys():
 			continue
 	return myss	
 
-dificulty = input("E(EASY)M(MEDIUM)H(HARD)E(EXTREME): ")
+dificulty = input("E(EASY)M(MEDIUM)H(HARD)I(INSANE): ")
 dificulty = dificulty.upper()
 
 if ("E" in dificulty): 
 	lives = 2
 	obMax = 20
 	obMin = 19
+	startingObs = 1
 elif ("M" in dificulty): 
 	lives = 2
 	obMax = 20
 	obMin = 5
+	startingObs = 3
 elif ("H" in dificulty): 
 	lives = 1
 	obMax = 20
 	obMin = 10
-elif ("E" in dificulty):
+	startingObs = 8
+elif ("I" in dificulty):
 	lives = 1
 	obMax = 30
 	obMin = 20
+	startingObs = 12 
 else:
 	print("Unknown dificulty. Going for medium!")
 	lives = 2
 	obMax = 20
 	obMin = 5
+	startingObs = 3
 
 mysMax = 2
 mysMin = 1
@@ -96,11 +113,16 @@ mysNum = random.randint(mysMin, mysMax - 1)
 obs = list(())
 myss = list(())
 
-genObs()
+print(startingObs)
+
+for i in range(0, 10):
+	genObs()
+
 genMys()
 
 while True:
-	move = input("W(UP)A(LEFT)S(DOWN)D(RIGHT): ")
+	# move = input("W(UP)A(LEFT)S(DOWN)D(RIGHT): ")
+	move = readchar.readchar()
 	move = move.upper()
 
 	print("\n" * 1000)
@@ -113,6 +135,8 @@ while True:
 		currentY = currentY + 1
 	elif ("D" in move):
 		currentX = currentX + 1
+	elif ("Q" in move):
+		exit()
 	else:
 		print("Not a move!")
 
@@ -150,7 +174,10 @@ while True:
 		obNum = random.randint(1, obMax - 1)
 		mysNum = random.randint(mysMin, mysMax - 1)
 		myss.clear()
-		genObs()
+
+		for i in range(0, startingObs):
+			genObs()
+		
 		genMys()
 
 	if (lives == 0):
